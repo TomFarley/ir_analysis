@@ -67,19 +67,42 @@ def run_mast_rir():  # pragma: no cover
     # pulse_range_rand = [29936, 30471]
     # pulse = int(pulse_range_rand[0] + np.diff(pulse_range_rand)[0] * np.random.rand())
 
+    # pulse = 29541    # Rhys Doyle issue shot
+
+    pulse = 24172  # Andrew Kirk request
+    pulse = 24173  # Andrew Kirk request
+
     camera = 'rir'
     pass_no = 0
     machine = 'MAST'
-    scheduler = False
+
+    # scheduler = False
+    scheduler = True
+
     magnetics = False
     update_checkpoints = False
     # update_checkpoints = True
-    debug = {'debug_detector_window': False, 'camera_shake': False,
-             'movie_data_animation': False, 'movie_data_nuc_animation': False,
-             'spatial_coords': True, 'spatial_res': False, 'movie_data_nuc': False,
-             'surfaces': False, 'analysis_path': True, 'temperature_im': False}
+    debug = {'calcam_calib_image': True, 'debug_detector_window': True,
+             'movie_intensity_stats-raw': True,
+             'movie_intensity_stats-corrected': True,
+             'movie_intensity_stats-nuc': False,
+             'dark_level': False,
+             'movie_data_animation': True, 'movie_data_nuc_animation': True,
+             'movie_temperature_animation': True,
+             'spatial_coords': False,
+             'spatial_res': False,
+             'movie_data_nuc': False, 'specific_frames': True, 'camera_shake': False, 'temperature_im': False,
+             'surfaces': False, 'analysis_path': False,
+             'path_cross_sections': False,
+             'temperature_vs_R_t': True,
+             'heat_flux_vs_R_t-raw': True,
+             'heat_flux_vs_R_t-robust': True,
+             'timings': True,
+             'strike_point_loc': False,
+             # 'heat_flux_path_1d': True,
+             }
     # debug = {k: True for k in debug}
-    debug = {k: False for k in debug}
+    # debug = {k: False for k in debug}
     figures = {'spatial_res': False}
     logger.info(f'Running MAST scheduler workflow...')
     status = scheduler_workflow(pulse=pulse, camera=camera, pass_no=pass_no, machine=machine, scheduler=scheduler,
@@ -92,21 +115,49 @@ def run_mast_rit():  # pragma: no cover
     # pulse = 27880  # Full frame upper divertor
     # pulse = 29000  # 80x256 upper divertor
     # pulse = 28623   # 700kA - no data?
-    pulse = 26798   # MAST 400kA
+    # pulse = 26798   # MAST 400kA
+
+    # pulse = 26957   # Early full frame?
+    # pulse = 29936   # Late full frame?
+    pulse = 29541    # Rhys Doyle issue shot
+
+    pulse = 24172  # Andrew Kirk request
+    pulse = 24173  # Andrew Kirk request
+
     camera = 'rit'
 
     pass_no = 0
     machine = 'MAST'
-    scheduler = False
+
+    # scheduler = False
+    scheduler = True
+
     magnetics = False
     update_checkpoints = False
     # update_checkpoints = True
-    debug = {'debug_detector_window': True, 'camera_shake': True,
-             'movie_data_animation': False, 'movie_data_nuc_animation': False,
-             'spatial_coords': True, 'spatial_res': False, 'movie_data_nuc': False,
-             'surfaces': False, 'analysis_path': True, 'temperature_im': False,}
+    debug = {'calcam_calib_image': True, 'debug_detector_window': True,
+             'movie_intensity_stats-raw': True,
+             'movie_intensity_stats-corrected': True,
+             'movie_intensity_stats-nuc': False,
+             'dark_level': False,
+             'bad_frames_intensity': False,
+             'bad_frames_images': False,
+             'movie_data_animation': True, 'movie_data_nuc_animation': True,
+             'movie_temperature_animation': True,
+             'spatial_coords': False,
+             'spatial_res': False,
+             'movie_data_nuc': False, 'specific_frames': True, 'camera_shake': False, 'temperature_im': False,
+             'surfaces': False, 'analysis_path': False,
+             'path_cross_sections': False,
+             'temperature_vs_R_t': True,
+             'heat_flux_vs_R_t-raw': True,
+             'heat_flux_vs_R_t-robust': True,
+             'timings': True,
+             'strike_point_loc': False,
+             # 'heat_flux_path_1d': True,
+             }
     # debug = {k: True for k in debug}
-    debug = {k: False for k in debug}
+    # debug = {k: False for k in debug}
     figures = {'spatial_res': False}
     logger.info(f'Running MAST scheduler workflow...')
     status = scheduler_workflow(pulse=pulse, camera=camera, pass_no=pass_no, machine=machine, scheduler=scheduler,
@@ -124,11 +175,17 @@ def run_mastu_rir():  # pragma: no cover
     # pulse = 44677  # Standard pulse JH suggests comparing with all diagnostics - RT18 slack, time to eurofusion
     pulse = 44982  # Error field shot
 
+    pulse = 45411  # First shot of EXH-06 (power balance), Zref scan
+    pulse = 45414  # First shot of EXH-06 (power balance), CD -8cm Zshift, sp sweep
+    pulse = 45415  # First shot of EXH-06 (power balance), SX -8cm Zshift, sp sweep
+
     camera = 'rir'
     pass_no = 0
     machine = 'MAST_U'
 
     scheduler = False
+    # scheduler = True
+
     magnetics = False
     update_checkpoints = False
     # update_checkpoints = True
@@ -138,6 +195,8 @@ def run_mastu_rir():  # pragma: no cover
              'movie_intensity_stats-raw': True,
              'movie_intensity_stats-corrected': True,
              'movie_intensity_stats-nuc': True,
+             'bad_frames_intensity': False,
+             'bad_frames_images': False,
              'dark_level': False,
              'movie_data_animation': False, 'movie_data_nuc_animation': False,
              'movie_temperature_animation': False,
@@ -156,7 +215,7 @@ def run_mastu_rir():  # pragma: no cover
 
     output = {'strike_point_loc': True, 'raw_frame_image': False}
 
-    # debug = {k: True for k in debug}
+    debug = {k: True for k in debug}
     # debug = {k: False for k in debug}
     figures = {'spatial_res': False, 'heat_flux_vs_R_t-robust': True}
     logger.info(f'Running {machine} {camera} scheduler workflow...')
@@ -256,8 +315,28 @@ def run_mastu_rit():  # pragma: no cover
 
     # pulse = 44896
 
+    # pulse = 44683  # RT18 slow sweep - raw images as well - AT request, -ve q
+    # pulse = 44910  # Low density locked modes - AT request
+
+    # pulse = 45101  # First time datac software working in central (external trigger) mode
+    # pulse = 45103  # First time datac software working in central (external trigger) mode
+    # pulse = 45104  # Similar repeat to 45103 recorded through Works
+    # pulse = 45226  # DATAC test recording
+    pulse = 45228  # DATAC test recording
+    # pulse = 45227  # Works recording
+
+    # pulse = 45115  # RT18
+    # pulse = 45116  # RT18
+
+    # pulse = 44896  # Omkar artefact in strike point position due to LP cable? Stuck at 0.7 m
+
+    # pulse = 45060  # Omkar shot, DN 600kA, SX, Ohm
 
     # 44849 onwards should have uda efit
+
+    pulse = 45411  # First shot of EXH-06 (power balance), Zref scan
+    pulse = 45414  # First shot of EXH-06 (power balance), CD -8cm Zshift, sp sweep
+    pulse = 45415  # First shot of EXH-06 (power balance), SX -8cm Zshift, sp sweep
 
     camera = 'rit'
     pass_no = 0
@@ -269,10 +348,13 @@ def run_mastu_rit():  # pragma: no cover
     # update_checkpoints = True
 
     # TODO: Remove redundant movie_data step
-    debug = {'calcam_calib_image': False, 'debug_detector_window': True,
-             'movie_intensity_stats-raw': False,
+    debug = {'calcam_calib_image': False, 'debug_detector_window': False,
+             'movie_intensity_stats-raw': True,
              'movie_intensity_stats-corrected': True,
-             'movie_intensity_stats-nuc': False,
+             'movie_intensity_stats-nuc': True,
+             'bad_pixels': True,
+             'bad_frames_intensity': False,
+             'bad_frames_images': False,
              'dark_level': False,
              'movie_data_animation': False, 'movie_data_nuc_animation': False,
              'movie_temperature_animation': False,
@@ -281,7 +363,7 @@ def run_mastu_rit():  # pragma: no cover
              'movie_data_nuc': False, 'specific_frames': False, 'camera_shake': False, 'temperature_im': False,
              'surfaces': False, 'analysis_path': False,
              'path_cross_sections': False,
-             'temperature_vs_R_t': True,
+             'temperature_vs_R_t': False,
              'heat_flux_vs_R_t-raw': True,
              'heat_flux_vs_R_t-robust': True,
              'timings': True,
@@ -292,7 +374,7 @@ def run_mastu_rit():  # pragma: no cover
     output = {'strike_point_loc': True, 'raw_frame_image': False}
 
     # debug = {k: True for k in debug}
-    debug = {k: False for k in debug}
+    # debug = {k: False for k in debug}
     figures = {'spatial_res': False, 'heat_flux_vs_R_t-robust': True}
     logger.info(f'Running MAST-U ait scheduler workflow...')
     status = scheduler_workflow(pulse=pulse, camera=camera, pass_no=pass_no, machine=machine,
@@ -306,11 +388,11 @@ if __name__ == '__main__':
     copy_default_user_settings(replace_existing=True)
 
     # AIR, AIT, AIS, AIU, AIV
+    # outputs = run_jet()
     # outputs = run_mast_rir()
     # outputs = run_mast_rit()
-    outputs = run_mastu_rir()
-    # outputs = run_mastu_rit()
-    # outputs = run_jet()
+    # outputs = run_mastu_rir()
+    outputs = run_mastu_rit()
 
     clean_netcdf = True
     copy_to_uda_scrach = True

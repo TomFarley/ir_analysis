@@ -1,0 +1,11 @@
+**/.directory
+.idea/
+ir_tools.egg-info/
+.eggs/
+**/__pycache__
+.coverage
+**.bkup
+tmp/
+**/plots/*
+*.err
+*.out

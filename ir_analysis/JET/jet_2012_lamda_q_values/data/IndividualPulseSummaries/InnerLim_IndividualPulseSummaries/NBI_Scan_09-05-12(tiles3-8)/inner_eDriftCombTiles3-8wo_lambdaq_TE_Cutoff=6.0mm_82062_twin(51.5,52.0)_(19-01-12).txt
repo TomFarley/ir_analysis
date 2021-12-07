@@ -1,0 +1,3 @@
+inner_eDriftCombTiles3-8wo_TE_Cutoff=6.0mm__(19-01-12)                                      |_______________ Far SOL region _______________|  |______________ Near SOL region _____________| |__ Near/Far __|
+Pulse    Identifier            Twin [s]    Ip [MA]   ne [E19/m^3]  Psol [MW]    Pnbi [MW]    qpara0 [W/m^2]   lamdaq [mm]  #points   Chi^2     qpara0 [W/m^2] lamdaq [mm]  #points   Chi^2    qpara0  lamdaq
+82062   eDriftCombTiles3-8wo  51.5 52.0  1.940 0.001  6.75 0.03    1.26 0.05     3.42 0.05     7.03 0.73       11.4 1.5      216    6.63E-01     90.45 8.67    1.7 0.1       293    3.22E+00    12.9   0.15

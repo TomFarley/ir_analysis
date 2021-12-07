@@ -1,0 +1,3 @@
+inner_eDriftCombTiles3-14wo_TE__(19-01-12)                                                  |_______________ Far SOL region _______________|  |______________ Near SOL region _____________| |__ Near/Far __|
+Pulse    Identifier            Twin [s]    Ip [MA]   ne [E19/m^3]  Psol [MW]    Pnbi [MW]    qpara0 [W/m^2]   lamdaq [mm]  #points   Chi^2     qpara0 [W/m^2] lamdaq [mm]  #points   Chi^2    qpara0  lamdaq
+82059  eDriftCombTiles3-14wo  51.5 52.0  1.948 0.001  6.61 0.03    2.00 0.05     1.09 0.01     12.22 0.23      12.9 0.5      924    3.75E+00     NaN NaN       NaN NaN         0    0.00E+00    NaN    NaN

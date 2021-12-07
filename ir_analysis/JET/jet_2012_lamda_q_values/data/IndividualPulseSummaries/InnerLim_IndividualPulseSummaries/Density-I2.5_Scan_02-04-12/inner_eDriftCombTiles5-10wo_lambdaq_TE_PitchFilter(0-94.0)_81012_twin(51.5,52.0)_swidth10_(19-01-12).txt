@@ -1,0 +1,3 @@
+inner_eDriftCombTiles5-10wo_TE_PitchFilter(0-94.0)__(19-01-12)                              |______________ Conventional region ____________| |______________ Anomalous region _____________|
+Pulse    Identifier            Twin [s]    Ip [MA]   ne [E19/m^3]  Psol [MW]    Pnbi [MW]    qpara0 [W/m^2]   lamdaq [mm]  #points   Chi^2     qpara0 [W/m^2] lamdaq [mm]  #points   Chi^2
+81012  eDriftCombTiles5-10wo  51.5 52.0  2.436 0.001  7.88 0.09    1.76 0.06     0 0           11.03 0.31      9.5 0         318    9.71E-01     22.35 0.61    5.2 0         142    2.85E-01

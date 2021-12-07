@@ -1,0 +1,2 @@
+Pulse    Identifier            Twin [s]    Ip [MA]   ne [E19/m^3]  Psol [MW]    Pnbi [MW]    qpara0 [W/m^2]   lamdaq [mm]
+81015 eDriftCombTiles5-16w++  51.5 52.0  2.437 0.001   7.9 0.1     1.75 0.06     0 0           5.63 0.38       10.0 0.3

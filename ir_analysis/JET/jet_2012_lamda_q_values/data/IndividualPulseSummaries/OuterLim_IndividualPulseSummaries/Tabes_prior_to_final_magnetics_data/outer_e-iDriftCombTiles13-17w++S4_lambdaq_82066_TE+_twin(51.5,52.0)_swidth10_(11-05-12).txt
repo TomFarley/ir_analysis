@@ -1,0 +1,3 @@
+outer_e-iDriftCombTiles13-17w++S4_TE+__(11-05-12)                                           |_______________ Far SOL region _______________|  |______________ Near SOL region _____________| |__ Near/Far __|
+Pulse  Cutoff [mm]   Pitch filter [deg]    Ip [MA]   ne [E19/m^3]  Psol [MW]    Pnbi [MW]    qpara0 [W/m^2]   lamdaq [mm]  #points   Chi^2     qpara0 [W/m^2] lamdaq [mm]  #points   Chi^2    qpara0  lamdaq
+82066     0.0            0.0 0.0         1.950 0.001   6.92 0.04   3.14 0.07    3.38 0.00      26.31 0.31      9.0  0.2      575   5.65E+00      27.36 1.56   6.8  2.8        33    1.28E+00   1.04    0.75

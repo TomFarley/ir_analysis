@@ -1,0 +1,3 @@
+inner_eDriftCombTiles5-10wo_TE_Cutoff=6.0mm_PitchFilter(0-93.5)__(19-01-12)                 |_______________ Far SOL region _______________|  |______________ Near SOL region _____________| |__ Near/Far __|
+Pulse  Cutoff [mm]   Pitch filter [deg]    Ip [MA]   ne [E19/m^3]  Psol [MW]    Pnbi [MW]    qpara0 [W/m^2]   lamdaq [mm]  #points   Chi^2     qpara0 [W/m^2] lamdaq [mm]  #points   Chi^2    qpara0  lamdaq
+80930     6.0            0.0 93.5        1.454 0.001   3.78 0.02   0.71 0.05    0.00 0.00      2.08 0.05       61.8 5.7      270   3.51E-02      6.03 0.39    5.5  0.5        45    7.43E-03   2.90    0.09

@@ -1,0 +1,2 @@
+Pulse     Identifier    Twin [s]    Ip [MA]   ne [E17/m^3]   Psol [MW]  qpara0 [W/m^2]   lamdaq [mm]
+80835        Tiled8    56.5 56.7  2.500 1.000   5.6 1.0      1.00 1.00    1.97 0.00      -40.5 14.1

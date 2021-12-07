@@ -15,7 +15,7 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 
-from fire import fire_paths
+
 from fire.misc.utils import make_iterable
 from fire.interfaces.uda_utils import import_pyuda
 from fire.plugins.movie_plugins.uda import read_movie_meta, get_uda_movie_obj

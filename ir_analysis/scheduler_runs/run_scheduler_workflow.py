@@ -15,7 +15,7 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 
-from fire import fire_paths, copy_default_user_settings
+from fire.interfaces.user_config import copy_default_user_settings
 from fire.scripts.scheduler_workflow import scheduler_workflow, copy_output
 
 logger = logging.getLogger(__name__)
@@ -220,8 +220,8 @@ def run_mastu_rir():  # pragma: no cover
     figures = {'spatial_res': False, 'heat_flux_vs_R_t-robust': True}
     logger.info(f'Running {machine} {camera} scheduler workflow...')
     status = scheduler_workflow(pulse=pulse, camera=camera, pass_no=pass_no, machine=machine, scheduler=scheduler,
-                       equilibrium=magnetics, update_checkpoints=update_checkpoints, debug=debug, figures=figures,
-                                output=output)
+                                equilibrium=magnetics, update_checkpoints=update_checkpoints, debug=debug, figures=figures,
+                                output_files=output)
     return status
 
 def run_mastu_rit():  # pragma: no cover
@@ -229,7 +229,7 @@ def run_mastu_rit():  # pragma: no cover
     # pulse = 50001  # Test movie consisting of black body cavity calibration images
     # pulse = 50002  # IRCAM Works raw file for debugging
     # pulse = 43141  # Early diverted plasma on T2-T4
-    pulse = 43183  # Early diverted plasma on T2-T5
+    # pulse = 43183  # Early diverted plasma on T2-T5
     # pulse = 43163  # TODO: check frame rate and expsure meta data on LWIR PC
     # pulse = 43412  # Peter Ryan's strike point sweep based on 43391 for LP checks
     # pulse = 43413  # Peter Ryan's strike point sweep based on 43391 for LP checks
@@ -246,6 +246,7 @@ def run_mastu_rit():  # pragma: no cover
     # pulse = 43591
     # pulse = 43587
     # pulse = 43610
+    pulse = 43625  # File caused file archive copy error?
     # pulse = 43643
     # pulse = 43644
     # pulse = 43648
@@ -322,7 +323,7 @@ def run_mastu_rit():  # pragma: no cover
     # pulse = 45103  # First time datac software working in central (external trigger) mode
     # pulse = 45104  # Similar repeat to 45103 recorded through Works
     # pulse = 45226  # DATAC test recording
-    pulse = 45228  # DATAC test recording
+    # pulse = 45228  # DATAC test recording
     # pulse = 45227  # Works recording
 
     # pulse = 45115  # RT18
@@ -334,16 +335,23 @@ def run_mastu_rit():  # pragma: no cover
 
     # 44849 onwards should have uda efit
 
-    pulse = 45411  # First shot of EXH-06 (power balance), Zref scan
-    pulse = 45414  # First shot of EXH-06 (power balance), CD -8cm Zshift, sp sweep
-    pulse = 45415  # First shot of EXH-06 (power balance), SX -8cm Zshift, sp sweep
+    # pulse = 45411  # First shot of EXH-06 (power balance), Zref scan
+    # pulse = 45414  # First shot of EXH-06 (power balance), CD -8cm Zshift, sp sweep
+    # pulse = 45415  # First shot of EXH-06 (power balance), SX -8cm Zshift, sp sweep
+
+    # pulse = 45360
+    # pulse = 45062
+
+    pulse = 45419  # EXH-06, nice Ohmic LSN reference
 
     camera = 'rit'
     pass_no = 0
     machine = 'MAST_U'
 
-    scheduler = False
-    magnetics = False
+    scheduler = True
+
+    equilibrium = False
+    # equilibrium = True
     update_checkpoints = False
     # update_checkpoints = True
 
@@ -374,12 +382,12 @@ def run_mastu_rit():  # pragma: no cover
     output = {'strike_point_loc': True, 'raw_frame_image': False}
 
     # debug = {k: True for k in debug}
-    # debug = {k: False for k in debug}
+    debug = {k: False for k in debug}
     figures = {'spatial_res': False, 'heat_flux_vs_R_t-robust': True}
     logger.info(f'Running MAST-U ait scheduler workflow...')
     status = scheduler_workflow(pulse=pulse, camera=camera, pass_no=pass_no, machine=machine,
-                                scheduler=scheduler, equilibrium=magnetics, update_checkpoints=update_checkpoints,
-                                debug=debug, figures=figures, output=output)
+                                scheduler=scheduler, equilibrium=equilibrium, update_checkpoints=update_checkpoints,
+                                debug=debug, figures=figures, output_files=output)
     return status
 
 

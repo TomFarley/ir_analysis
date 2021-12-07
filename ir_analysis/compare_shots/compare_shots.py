@@ -16,8 +16,8 @@ import matplotlib.pyplot as plt
 import calcam
 
 import fire
-from fire import fire_paths
-from fire.interfaces import interfaces
+
+from fire.interfaces import interfaces, user_config
 from fire.misc.utils import make_iterable
 from fire.plugins import plugins
 from fire.plugins.output_format_plugins.pickle_output import read_output_file
@@ -29,8 +29,23 @@ from fire.scripts.read_pickled_ir_data import read_data_for_pulses_pickle
 logger = logging.getLogger(__name__)
 logger.propagate = False
 
+"""Singals Jack Lovell uses when session leading:
+/ane/density
+/epm/output/separatrixgeometry/rmidplanein (and out)
+/xdc/ai/cpu1/plasma_current
+/xdc/ai/cpu1/rogext_p1
+/xdc/ai/cpu1/rogext_p6l
+/xdc/reconstruction/s/seg01_r (LEMUR outer radius)
+/xim/da/hm10/r
+/xim/da/hm10/t
+/xzc/zcon/zip
+
+"""
 
 def compare_shots_1d(camera: str, signals: dict, pulses: dict, machine:str= 'mast_u', ax=None, show=True):
+
+    if len(signals) == 0:
+        return
 
     data = read_data_for_pulses_pickle(camera, pulses, machine)
 
@@ -56,35 +71,68 @@ def compare_shots_1d(camera: str, signals: dict, pulses: dict, machine:str= 'mas
         plot_tools.save_fig(path_fn=None, fig=fig)
         plot_tools.show_if(show=show)
 
-def compare_shots_1d_with_uda_signals(camera: str, signals_ir: dict, signals_uda: dict, pulses: dict, machine:str= 'mast_u',
-                                      show=True):
-    fig, axes, ax_passed = plot_tools.get_fig_ax(ax_grid_dims=(2, 1), sharex=True, axes_flatten=True)
+def compare_shots_1d_with_uda_signals(camera: str, signals_ir: dict, signals_uda: dict, pulses: dict,
+                                      machine:str= 'mast_u', show=True):
+    if isinstance(signals_ir, str):
+        signals_ir = [signals_ir]
+
+    if isinstance(signals_ir, (list, tuple)):  #  and not isinstance(signals[0], (list, tuple)):
+        logger.info(f'Not signal properties passed with signals')
+        signals_ir = {signal: {} for signal in signals_ir}
+
+    if isinstance(pulses, (list, tuple)):
+        logger.info(f'No shot properties passed with shots')
+        pulses = {pulse: {} for pulse in pulses}
+
+    n_signals_ir = len(signals_ir)
+    n_signals_uda = len(signals_uda)
+    n_ax = (n_signals_ir > 0) + (n_signals_uda > 0)
+    fig, axes, ax_passed = plot_tools.get_fig_ax(ax_grid_dims=(n_ax, 1), sharex=True, axes_flatten=True)
+    i_ax = 0
 
     if isinstance(pulses, (tuple, list, np.ndarray)):
         pulses = {pulse: {} for pulse in pulses}
 
-    ax = axes[0]
-    compare_shots_1d(camera, signals_ir, pulses=pulses, machine=machine, ax=ax, show=False)
+    if n_signals_ir > 0:
+        ax = axes[i_ax]
+        compare_shots_1d(camera, signals_ir, pulses=pulses, machine=machine, ax=ax, show=False)
+        i_ax += 1
 
-    ax = axes[1]
-    for signal in make_iterable(signals_uda):
-        for pulse in pulses.keys():
-            uda_utils.plot_uda_signal(signal, pulse, ax=ax, alpha=0.7, show=False)
+    if n_signals_uda > 0:
+        if isinstance(signals_uda, (list, tuple)):  #  and not isinstance(signals[0], (list, tuple)):
+            logger.info(f'Not signal properties passed with signals')
+            signals_uda = {signal: {} for signal in signals_uda}
 
-    plot_tools.show_if(show=show)
+        ax = axes[i_ax]
+        label = '{shot} {name}' if n_signals_uda > 1 else '{shot}'
+        for signal in make_iterable(signals_uda):
+            for pulse in pulses:
+                uda_utils.plot_uda_signal(signal, pulse, ax=ax, alpha=0.7, label=label, show=False)
+        plot_tools.legend(ax)
+
+    plot_tools.show_if(show=show, tight_layout=True)
 
 
 def compare_shots_2d(camera: str, signals: dict, pulses: Union[dict, Sequence], machine:str= 'mast_u',
                      t_range=None, r_range=None, t_wins=None, set_ax_lims_with_ranges=True, robust=True,
                      machine_plugins=None, show=True, colorbar_kwargs=None, figsize=(14, 8), **kwargs):
     pulses = make_iterable(pulses)
+    n_pulses = len(make_iterable(pulses))
     data = read_data_for_pulses_pickle(camera, pulses, machine)
 
     colorbar_kws = dict(position='top', size='3%')
-    if colorbar_kwargs is not None:
+    if (colorbar_kwargs is not None) and (n_pulses < 8):
         colorbar_kws.update(colorbar_kwargs)
+        add_colorbar = True
+    else:
+        add_colorbar = False
 
-    fig, axes, ax_passed = plot_tools.get_fig_ax(ax_grid_dims=(1, len(make_iterable(pulses))), axes_flatten=True,
+    n_max_ax_per_row = 5
+    n_rows = int(np.ceil(n_pulses / n_max_ax_per_row))
+    n_cols = n_pulses if n_rows == 1 else int(np.ceil(n_pulses/n_rows))
+    ax_grid_dims = (n_rows, n_cols)
+
+    fig, axes, ax_passed = plot_tools.get_fig_ax(ax_grid_dims=ax_grid_dims, axes_flatten=True,
                                                  figsize=figsize, sharex=True, sharey=True)
     axes = make_iterable(axes)
 
@@ -99,15 +147,17 @@ def compare_shots_2d(camera: str, signals: dict, pulses: Union[dict, Sequence], 
             # meta = dict(pulse=pulse, camera=camera, machine=machine)
             meta['path_label'] = meta['analysis_path_labels'][meta['analysis_path_keys'].index(path_key)]
             debug_plots.debug_plot_profile_2d(data_paths, param=signal, ax=ax, path_names=path_key, robust=robust,
-                                              annotate=True, meta=meta, t_wins=t_wins, t_range=t_range, r_range=r_range,
+                                              annotate=True, meta=meta, t_wins=t_wins, t_range=t_range, x_range=r_range,
                                               machine_plugins=machine_plugins, show=False,
-                                              colorbar_kwargs=colorbar_kws,
+                                              colorbar_kwargs=colorbar_kws, add_colorbar=add_colorbar,
                                               set_data_coord_lims_with_ranges=set_ax_lims_with_ranges, **kwargs)
             if i_ax > 0:
                 ax.yaxis.label.set_visible(False)
+            if i_ax < n_cols*(n_rows-1):  # x axis labels only on bottom row
+                ax.xaxis.label.set_visible(False)
     plt.tight_layout()
-    plot_tools.show_if(show, tight_layout=False)
     plot_tools.save_fig(None)
+    plot_tools.show_if(show, tight_layout=False)
 
 if __name__ == '__main__':
     machine = 'mast_u'
@@ -122,7 +172,8 @@ if __name__ == '__main__':
 
     # calcam_calib = calcam.Calibration(load_filename=str(files['calcam_calib']))
 
-    config = interfaces.json_load(fire_paths['config'], key_paths_drop=('README',))
+    config, config_groups, config_path_fn = user_config.get_user_fire_config()
+    fire_paths = config_groups['fire_paths']
 
     paths_input = config['paths_input']['input_files']
     paths_output = {key: Path(path) for key, path in config['paths_output'].items()}
@@ -136,12 +187,13 @@ if __name__ == '__main__':
                                                                                    attributes_optional=
                                                                                    machine_plugin_attrs['optional'],
                                                                                    plugins_required=machine,
-                                                                                   plugin_type='machine')
+                                                                                   plugin_type='machine',
+                                                                           base_paths=fire_paths)
     machine_plugins, machine_plugins_info = machine_plugins[machine], machine_plugins_info[machine]
     fire.active_machine_plugin = (machine_plugins, machine_plugins_info)
 
     # signals = {'heat_flux_path0': dict(x_coord='s_global_path0', reduce=[('t', np.mean, ())], offset_x_peak=True)}
-    signals = {'heat_flux_amplitude_peak_global_path0': dict()}
+    signals = {'heat_flux_amplitude_global_peak_path0': dict()}
     # pulses = {43163: {}, 43183: {}}
     # pulses = {43413: {}, 43415: {}}
     # pulses = {43583 : {}}
@@ -234,7 +286,7 @@ if __name__ == '__main__':
     plot_tools.show_if(True, tight_layout=True)
 
     if False:
-        signals_mixed = [['heat_flux_amplitude_peak_global_path0'],
+        signals_mixed = [['heat_flux_amplitude_global_peak_path0'],
                      ['heat_flux_R_peak_path0'],
                      # ['/ane/density'],
                      # [('xim/da/hm10/t', 'xim/da/hm10/r')],
@@ -247,7 +299,7 @@ if __name__ == '__main__':
         # plot_tools.show_if(True, tight_layout=True)
 
     if False:
-        signals_mixed = [[['heat_flux_amplitude_peak_global_path0'], ['temperature_amplitude_peak_global_path0']],
+        signals_mixed = [[['heat_flux_amplitude_global_peak_path0'], ['temperature_amplitude_peak_global_path0']],
                          ['heat_flux_R_peak_path0', 'temperature_R_peak_path0'],
                          [('xim/da/hm10/t', 'xim/da/hm10/r')],
                          # [['xpx/clock/lwir-1'], ['/AMC/ROGEXT/TF']],

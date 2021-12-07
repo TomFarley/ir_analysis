@@ -52,9 +52,9 @@ def heatmap_sx_sweep(pulse=44677):
     # r_range = [0.96, 1.5]
 
     debug_plots.debug_plot_profile_2d(data_paths=path_data, param=signal_ir, ax=ax, robust=robust,
-                                      t_range=t_range, r_range=r_range, set_data_coord_lims_with_ranges=True,
+                                      t_range=t_range, x_range=r_range, set_data_coord_lims_with_ranges=True,
                                       robust_percentiles=robust_percentiles,
-                                          machine_plugins='mast_u',
+                                      machine_plugins='mast_u',
                                       show=False)
     plot_tools.annotate_providence(ax, meta_data=meta)
     plot_tools.show_if(True, tight_layout=True)
@@ -107,9 +107,9 @@ def radial_profile():
 
     ax = axes[0]
     debug_plots.debug_plot_profile_2d(data_paths=path_data, param=signal_ir, ax=ax, robust=robust, mark_peak=False,
-                                      t_range=t_range, r_range=r_range, set_data_coord_lims_with_ranges=True,
+                                      t_range=t_range, x_range=r_range, set_data_coord_lims_with_ranges=True,
                                       robust_percentiles=robust_percentiles,
-                                          machine_plugins='mast_u', colorbar_kwargs=dict(position='top'),
+                                      machine_plugins='mast_u', colorbar_kwargs=dict(position='top'),
                                       show=False)
     plot_tools.annotate_providence(ax, meta_data=meta)
     for t_profile in t_profiles:

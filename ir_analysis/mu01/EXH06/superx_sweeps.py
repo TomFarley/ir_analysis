@@ -21,32 +21,159 @@ from fire.scripts.read_pickled_ir_data import read_data_for_pulses_pickle
 from fire.plotting import plot_tools, debug_plots
 
 logger = logging.getLogger(__name__)
-logger.propagate = False
 
-def check_time_axis_rescale():
-    pulse = 43583
-    data = read_data_for_pulses_pickle('rit', pulse)
+
+def heatmap_sx_sweep(pulse=44677):
+
+    # pulse = 45411  # First shot of EXH-06 (power balance), Zref scan
+    # pulse = 45414  # First shot of EXH-06 (power balance), CD -8cm Zshift, sp sweep
+    pulse = 45415  # First shot of EXH-06 (power balance), SX -8cm Zshift, sp sweep
+    pulse = 45416  # First shot of EXH-06 (power balance), SX -8cm Zshift, sp sweep
+
+
+    camera = 'rit'
+    signal_ir = 'heat_flux'
+    # signal_ir = 'temperature'
+
+
+    machine = 'mast_u'
+    # machine = 'mast'
+    meta = dict(camera=camera, pulse=pulse, machine=machine, signal=signal_ir, diag_tag_analysed=camera.upper(),
+                path_label='T5')
+
+    data = read_data_for_pulses_pickle(camera, pulse, machine)
     path_data = data[pulse][0]['path_data']
+    path_data = path_data.swap_dims({'i_path0': 'R_path0'})
 
-    # fig = plt.figure()
-    # plt.contourf(path_data['heat_flux_path0'])
+    fig, axes, ax_passed = plot_tools.get_fig_ax(ax_grid_dims=(1, 1), sharex=True, axes_flatten=True)
 
-    plt.figure()
-    plt.plot(path_data['heat_flux_amplitude_peak_global_path0'].t,path_data['heat_flux_amplitude_peak_global_path0'].values, label='raw', ls=':')
+    ax = axes[0]
 
-    if pulse >= 43543 and pulse <= 43621:
-        t_scale_factor = 0.616342 / 0.56744
-        plt.plot(path_data['heat_flux_amplitude_peak_global_path0'].t*t_scale_factor,path_data['heat_flux_amplitude_peak_global_path0'].values,
-                 label='scaled', alpha=0.7)
+    # robust = False
+    robust = True
+    # robust_percentiles = (0, 100)
+    # robust = True
+    robust_percentiles = (30, 98)
+
+    t_range = None
+    r_range = None
+    if pulse == 45415:
+        t_range = [0.5, 0.987]
+        r_range = [1.395, 1.7]
+        pass
+    elif pulse == 45416:
+        t_range = [0.45, 1.15]
+        r_range = [1.393, 1.7]
+        pass
+
+    debug_plots.debug_plot_profile_2d(data_paths=path_data, param=signal_ir, ax=ax, robust=robust,
+                                      t_range=t_range, x_range=r_range, set_data_coord_lims_with_ranges=True,
+                                      robust_percentiles=robust_percentiles,
+                                      machine_plugins='mast_u',
+                                      show=False)
+    plot_tools.annotate_providence(ax, meta_data=meta)
+    plot_tools.legend(ax)
+
+    cropped_str = '-cropped' if (t_range or r_range) else ''
+    times_str = "_".join([f'{t:0.3f}' for t in t_range]) if t_range else ''
+    r_str = "_".join([f'{r:0.3f}' for r in r_range]) if r_range else ''
+
+    fn = Path(f'figures/{pulse}/{signal_ir}_map-{pulse}-{machine}-t_{r_str}{cropped_str}.png').resolve()
+    plot_tools.save_fig(fn, mkdir_depth=2)
+    plot_tools.show_if(True, tight_layout=True)
+
+def radial_profile():
+    # pulse = 45411  # First shot of EXH-06 (power balance), Zref scan
+    # pulse = 45414  # First shot of EXH-06 (power balance), CD -8cm Zshift, sp sweep
+    # pulse = 45415  # First shot of EXH-06 (power balance), SX -8cm Zshift, sp sweep
+    # pulse = 45416  # First shot of EXH-06 (power balance), SX -8cm Zshift, sp sweep
+    pulse = 45419  # First shot of EXH-06 (power balance), CD -8cm Zshift, sp sweep
+    # pulse = 45420  # First shot of EXH-06 (power balance), CD -8cm Zshift, sp sweep, with S beam for 300ms
+
+    camera = 'rit'
+    signal_ir = 'heat_flux'
+    # signal_ir = 'temperature'
+
+    machine = 'mast_u'
+    # machine = 'mast'
+    meta = dict(camera=camera, pulse=pulse, machine=machine, signal=signal_ir, diag_tag_analysed=camera.upper(),
+                path_label='T5')
+
+    data = read_data_for_pulses_pickle(camera, pulse, machine)
+    path_data = data[pulse][0]['path_data']
+    path_data = path_data.swap_dims({'i_path0': 'R_path0'})
+
+    fig, axes, ax_passed = plot_tools.get_fig_ax(ax_grid_dims=(2, 1), sharex=True, axes_flatten=True, figsize=(6, 8))
+
+    # robust = False
+    # robust_percentiles = (0, 100)
+    robust = True
+    robust_percentiles = (30, 98)
+
+    r_range = None
+    # r_range = [0.96, 1.5]
+    # r_range = [0.75, 1.1]
+
+    # t_range = None
+    # t_range = [0.3, 0.59]
+    t_range = [0.0, 1.2]
+
+    t_profile = 0.5
+    t_profiles = [0.9, 0.95, 1.0]
+
+    if pulse == 45411:
+        # t_profile = 0.8
+        t_profile = 0.46
+        # t_profile = 0.36
+        t_profiles = [0.14, 0.232]
+    elif pulse == 45416:
+        t_profiles = [0.91, 0.96, 1.01]
+        r_range = [0.7, 1.6]
+    elif pulse == 45419:
+        t_profiles = [0.588, 0.657, 0.736]
+        r_range = [0.75, 1.0]
+        t_range = [0.28, 1.2]
+    elif pulse == 45420:
+        t_profiles = [0.588, 0.657, 0.736]
+        r_range = [0.75, 1.0]
+        t_range = [0.28, 1.0]
+        # r_range = [1.393, 1.6]
+
+    cropped_str = '-cropped' if (t_range or r_range) else ''
+
+    ax = axes[0]
+    debug_plots.debug_plot_profile_2d(data_paths=path_data, param=signal_ir, ax=ax, robust=robust, mark_peak=False,
+                                      t_range=t_range, x_range=r_range, set_data_coord_lims_with_ranges=True,
+                                      robust_percentiles=robust_percentiles,
+                                      machine_plugins='mast_u', colorbar_kwargs=dict(position='top'),
+                                      show=False)
+    plot_tools.annotate_providence(ax, meta_data=meta)
+
+    ax = axes[1]
+    for t_profile in t_profiles:
+        profile = path_data[f'{signal_ir}_path0'].sel(t=t_profile, method='nearest')
+        profile = profile.sel(R_path0=slice(*r_range)) if r_range else profile
+        t_change = np.ptp(profile.data)
+        label = rf'$t={t_profile:0.3f}$ s, $\Delta T = {t_change:0.2f}^\circ$C' if signal_ir == 'temperature' else (
+                rf'$t={t_profile:0.3f}$ s, $\Delta q_{{\perp}}$ = {t_change:0.3f} MW'
+        )
+        profile.plot(ax=ax, label=label)
+        color = plot_tools.get_previous_line_color(ax)
+        axes[0].axhline(t_profile, ls='--', color=color)
+
+        # plot_tools.annotate_axis(ax, rf'', loc='top_centre')
+    plot_tools.legend(ax, only_multiple_artists=False)
+    # ax.plot(profile, profile['R_path0'], label=f'$t={t}$ s')
 
 
-    #get the dalpha data
-    client=pyuda.Client()
-    da=client.get('/xim/da/hm10/t', 43583)
+    print(f'ptp = {t_change}')
+    ax.set_title('')
 
-    plt.plot(da.time.data, da.data*5, label=r'$D_{\alpha}$', alpha=0.7)
-    plt.legend()
-    plt.show()
+    times_str = "_".join([f'{t:0.3f}' for t in t_profiles])
+    fn = Path(f'figures/{pulse}/{signal_ir}_profile-{pulse}-{machine}-t_{times_str}{cropped_str}.png').resolve()
+    fn.parent.mkdir(exist_ok=True, parents=False)
+    plot_tools.save_fig(path_fn=fn)
+    plot_tools.show_if(True, tight_layout=True)
 
 def compare_t2_t5_heat_flux():
     camera = 'rit'
@@ -258,12 +385,8 @@ def compare_t2_t5_heat_flux():
 
     plot_tools.show_if(True, tight_layout=True)
 
-
 if __name__ == '__main__':
-    import pyuda
-    client = pyuda.Client()
-
-    compare_t2_t5_heat_flux()
-
-    check_time_axis_rescale()
+    radial_profile()
+    # heatmap_sx_sweep()
+    # compare_t2_t5_heat_flux()
     pass

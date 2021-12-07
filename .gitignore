@@ -9,3 +9,5 @@ tmp/
 **/plots/*
 *.err
 *.out
+*.log
+*.egg-info

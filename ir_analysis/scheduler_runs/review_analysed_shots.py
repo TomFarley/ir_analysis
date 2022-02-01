@@ -313,8 +313,8 @@ def review_analysed_shot(image_data, path_data, meta, debug=None, output=None):
                                             x_range=[0, 0.6], drop_other_coords=True, verbose=True)
 
         if True:   # debug.get('power_to_target', False):
-            debug_plots.plot_energy_to_target(path_data, params=('power_total_vs_t', 'cumulative_energy_vs_t',
-                                                                 'energy_total_vs_R', 'cumulative_energy_vs_R'),
+            debug_plots.plot_energy_to_target(path_data, params=('power_total_vs_t', 'energy_total_vs_R',
+                                                                 'cumulative_energy_vs_t', 'cumulative_energy_vs_R'),
                                        path_name=analysis_path_keys[0], meta_data=meta_data,
                                        machine_plugins=machine_plugins)
 
@@ -495,7 +495,7 @@ def review_shot_list(shots=None, camera='rit', recompute=False, copy_recent_shot
              'strike_point_loc': False,
              'power_to_target': True,
          }
-    debug = {k: False for k in debug}
+    # debug = {k: False for k in debug}
     # debug = {k: True for k in debug}
     # debug['movie_temperature_animation_gif'] = False
     # debug['movie_temperature_animation_gif'] = False
@@ -609,9 +609,9 @@ if __name__ == '__main__':
     # shots = [  # Jame's list of PEX KPI shots for re-analysis
     #     43610, 43611, 43612, 43613, 43614, 43643, 43644,
     #     43665, 43666, 43667, 43591, 43589, 43596]
-    # shots = [45266, 45270, 45271, 45272, 45282, 45285, 45286, 45340, 45341, 45360, 45387, 45388]  # AKirk H-mode
+    shots = [45266, 45270, 45271, 45272, 45282, 45285, 45286, 45340, 45341, 45360, 45387, 45388]  # AKirk H-mode
     # shots = [45060, 45062]  # Yacopo DSF measurements
     # shots = [45112, 45113, 45480, 45481, 45484]  # Vlad snowflake
-    shots = [45419, 45420]  # EXH=06 power ballance
-    review_shot_list(camera='rit', recompute=False, shots=shots, show=True)
+    # shots = [45419, 45420]  # EXH=06 power ballance
+    review_shot_list(camera='rit', recompute=True, shots=shots, show=True)
     # review_latest_shots(camera='rit', n_shots=1, n_shots_skip=3, copy_recent_shots=True, recompute=False, show=True)

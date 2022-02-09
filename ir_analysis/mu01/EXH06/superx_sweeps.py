@@ -79,7 +79,7 @@ def heatmap_sx_sweep(pulse=44677):
     r_str = "_".join([f'{r:0.3f}' for r in r_range]) if r_range else ''
 
     fn = Path(f'figures/{pulse}/{signal_ir}_map-{pulse}-{machine}-t_{r_str}{cropped_str}.png').resolve()
-    plot_tools.save_fig(fn, mkdir_depth=2)
+    plot_tools.save_fig(fn, mkdir_depth=3)
     plot_tools.show_if(True, tight_layout=True)
 
 def radial_profile():
@@ -355,7 +355,7 @@ def compare_t2_t5_heat_flux():
 
     path_fn = fire.fire_paths['user'] / 'figures' / 'heat_flux_radial_profiles' / fn
 
-    plot_tools.save_fig(path_fn, verbose=True, mkdir_depth=2, image_formats=['png', 'svg'])
+    plot_tools.save_fig(path_fn, verbose=True, mkdir_depth=3, image_formats=['png', 'svg'])
     plot_tools.show_if(True, tight_layout=True)
 
 

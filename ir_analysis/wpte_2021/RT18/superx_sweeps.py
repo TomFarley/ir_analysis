@@ -21,7 +21,7 @@ from fire.scripts.read_pickled_ir_data import read_data_for_pulses_pickle
 from fire.plotting import plot_tools, debug_plots
 
 logger = logging.getLogger(__name__)
-logger.propagate = False
+
 
 
 def heatmap_sx_sweep(pulse=44677):

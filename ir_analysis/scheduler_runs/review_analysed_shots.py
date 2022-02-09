@@ -25,7 +25,7 @@ from fire.physics import physics_parameters
 from fire.misc import utils
 
 logger = logging.getLogger(__name__)
-logger.propagate = False
+
 
 # paths_figures = (fire_paths['user'] / 'figures/').resolve()
 
@@ -488,7 +488,7 @@ def review_shot_list(shots=None, camera='rit', recompute=False, copy_recent_shot
              'surfaces': False, 'analysis_path': False,
              'temperature_vs_R_t': False,
              'heat_flux_vs_R_t-robust': True,
-             'heat_flux_vs_R_t-raw': True,
+             'heat_flux_vs_R_t-raw': False,
              'heat_flux_vs_R_t-robust-save': True,
              'heat_flux_vs_R_t-raw-save': True,
              'timings': False,
@@ -609,9 +609,11 @@ if __name__ == '__main__':
     # shots = [  # Jame's list of PEX KPI shots for re-analysis
     #     43610, 43611, 43612, 43613, 43614, 43643, 43644,
     #     43665, 43666, 43667, 43591, 43589, 43596]
-    shots = [45266, 45270, 45271, 45272, 45282, 45285, 45286, 45340, 45341, 45360, 45387, 45388]  # AKirk H-mode
+    # shots = [45266, 45270, 45271, 45272, 45282, 45285, 45286, 45340, 45341, 45360, 45387, 45388]  # AKirk H-mode
     # shots = [45060, 45062]  # Yacopo DSF measurements
     # shots = [45112, 45113, 45480, 45481, 45484]  # Vlad snowflake
     # shots = [45419, 45420]  # EXH=06 power ballance
-    review_shot_list(camera='rit', recompute=True, shots=shots, show=True)
+    # shots = [44697, 44699, 44700, 44702, 44797, 44607]  # EXH-16 X-divertor
+    shots = [45419]  # Strike point sweep for EFIT comparison
+    review_shot_list(camera='rit', recompute=False, shots=shots, show=True, copy_recent_shots=False)
     # review_latest_shots(camera='rit', n_shots=1, n_shots_skip=3, copy_recent_shots=True, recompute=False, show=True)

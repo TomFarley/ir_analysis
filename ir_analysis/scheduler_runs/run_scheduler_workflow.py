@@ -19,7 +19,7 @@ from fire.interfaces.user_config import copy_default_user_settings
 from fire.scripts.scheduler_workflow import scheduler_workflow, copy_output
 
 logger = logging.getLogger(__name__)
-logger.propagate = False
+
 
 
 
@@ -172,12 +172,12 @@ def run_mastu_rir():  # pragma: no cover
     # pulse = 44673  # DN-700-SXD-OH
     # pulse = 43952  # early focus
 
-    # pulse = 44677  # Standard pulse JH suggests comparing with all diagnostics - RT18 slack, time to eurofusion
-    pulse = 44982  # Error field shot
+    pulse = 44677  # Standard pulse JH suggests comparing with all diagnostics - RT18 slack, time to eurofusion
+    # pulse = 44982  # Error field shot
 
-    pulse = 45411  # First shot of EXH-06 (power balance), Zref scan
-    pulse = 45414  # First shot of EXH-06 (power balance), CD -8cm Zshift, sp sweep
-    pulse = 45415  # First shot of EXH-06 (power balance), SX -8cm Zshift, sp sweep
+    # pulse = 45411  # First shot of EXH-06 (power balance), Zref scan
+    # pulse = 45414  # First shot of EXH-06 (power balance), CD -8cm Zshift, sp sweep
+    # pulse = 45415  # First shot of EXH-06 (power balance), SX -8cm Zshift, sp sweep
 
     camera = 'rir'
     pass_no = 0
@@ -199,7 +199,7 @@ def run_mastu_rir():  # pragma: no cover
              'bad_frames_images': False,
              'dark_level': False,
              'movie_data_animation': False, 'movie_data_nuc_animation': False,
-             'movie_temperature_animation': False,
+             'movie_temperature_animation': True,
              'spatial_coords': False,
              'spatial_res': False,
              'movie_data_nuc': True, 'specific_frames': False, 'camera_shake': False, 'temperature_im': False,
@@ -215,7 +215,7 @@ def run_mastu_rir():  # pragma: no cover
 
     output = {'strike_point_loc': True, 'raw_frame_image': False}
 
-    debug = {k: True for k in debug}
+    # debug = {k: True for k in debug}
     # debug = {k: False for k in debug}
     figures = {'spatial_res': False, 'heat_flux_vs_R_t-robust': True}
     logger.info(f'Running {machine} {camera} scheduler workflow...')
@@ -246,7 +246,7 @@ def run_mastu_rit():  # pragma: no cover
     # pulse = 43591
     # pulse = 43587
     # pulse = 43610
-    pulse = 43625  # File caused file archive copy error?
+    # pulse = 43625  # File caused file archive copy error?
     # pulse = 43643
     # pulse = 43644
     # pulse = 43648
@@ -324,6 +324,7 @@ def run_mastu_rit():  # pragma: no cover
     # pulse = 45104  # Similar repeat to 45103 recorded through Works
     # pulse = 45226  # DATAC test recording
     # pulse = 45228  # DATAC test recording
+    # pulse = 45409  # DATAC test recording - high frame rate, subwindowed
     # pulse = 45227  # Works recording
 
     # pulse = 45115  # RT18
@@ -342,7 +343,14 @@ def run_mastu_rit():  # pragma: no cover
     # pulse = 45360
     # pulse = 45062
 
-    pulse = 45419  # EXH-06, nice Ohmic LSN reference
+    # pulse = 45419  # EXH-06, nice Ohmic LSN reference
+    # pulse = 45271  # Nice ELMy H-mode CDC
+    # pulse = 45341  # Nice ELMy H-mode CDC, recorded until end, but has ELM coils
+    # pulse = 45360  # Nice ELMy H-mode CDC, recorded until end
+    # pulse = 45387  # Some big events
+    # pulse = 45388  # Some big events - better
+
+    pulse = 44697  # X-divertor shot
 
     camera = 'rit'
     pass_no = 0
@@ -354,13 +362,16 @@ def run_mastu_rit():  # pragma: no cover
     # equilibrium = True
     update_checkpoints = False
     # update_checkpoints = True
+    # movie_plugins_filter = None
+    movie_plugins_filter = ['ipx']
+    # movie_plugins_filter = ['raw_movie']
 
     # TODO: Remove redundant movie_data step
     debug = {'calcam_calib_image': False, 'debug_detector_window': False,
              'movie_intensity_stats-raw': True,
              'movie_intensity_stats-corrected': True,
-             'movie_intensity_stats-nuc': True,
-             'bad_pixels': True,
+             'movie_intensity_stats-nuc': False,
+             'bad_pixels': False,
              'bad_frames_intensity': False,
              'bad_frames_images': False,
              'dark_level': False,
@@ -387,7 +398,8 @@ def run_mastu_rit():  # pragma: no cover
     logger.info(f'Running MAST-U ait scheduler workflow...')
     status = scheduler_workflow(pulse=pulse, camera=camera, pass_no=pass_no, machine=machine,
                                 scheduler=scheduler, equilibrium=equilibrium, update_checkpoints=update_checkpoints,
-                                debug=debug, figures=figures, output_files=output)
+                                debug=debug, figures=figures, output_files=output,
+                                movie_plugins_filter=movie_plugins_filter)
     return status
 
 

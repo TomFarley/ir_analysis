@@ -27,7 +27,7 @@ from fire.interfaces import uda_utils
 from fire.scripts.read_pickled_ir_data import read_data_for_pulses_pickle
 
 logger = logging.getLogger(__name__)
-logger.propagate = False
+
 
 """Singals Jack Lovell uses when session leading:
 /ane/density

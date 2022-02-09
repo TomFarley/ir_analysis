@@ -22,7 +22,7 @@ from fire.plotting import plot_tools
 from fire.interfaces import io_utils, io_basic
 
 logger = logging.getLogger(__name__)
-logger.propagate = False
+
 
 def load_analysed_shot_pickle(pulse, camera='rit', machine='mast_u', recompute=False):
     logger.info(f'Reviewing {machine}, {camera}, {pulse}')

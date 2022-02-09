@@ -91,7 +91,7 @@ def compile_jet_lambda_q_values_outer():
 
 
 logger = logging.getLogger(__name__)
-logger.propagate = False
+
 
 if __name__ == '__main__':
     compile_jet_lambda_q_values_outer()

@@ -24,7 +24,7 @@ from fire.plotting import plot_tools, debug_plots
 from fire.physics import physics_parameters
 
 logger = logging.getLogger(__name__)
-logger.propagate = False
+
 
 def heatmap_sx_sweep(pulse=44677):
     # pulse = 44677  # RT18 - Swept (attached?) super-x

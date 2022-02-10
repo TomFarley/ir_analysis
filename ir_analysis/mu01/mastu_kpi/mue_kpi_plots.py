@@ -251,7 +251,7 @@ def compare_t2_t5_heat_flux():
 
     plot_tools.legend(ax, loc='lower left')
 
-    plot_tools.save_fig(path_fn, verbose=True, mkdir_depth=2, image_formats=['png', 'svg'])
+    plot_tools.save_fig(path_fn, verbose=True, mkdir_depth=3, image_formats=['png', 'svg'])
     plot_tools.show_if(True, tight_layout=True)
 
 
@@ -282,7 +282,7 @@ def compare_t2_t5_heat_flux():
     fn = f'{diag_tag_analysed}_{pulse}_heatmap{robust_str}.png'
     path_fn = cwd / 'figures' / 'heat_flux_map' / fn
 
-    plot_tools.save_fig(path_fn, verbose=True, mkdir_depth=2, image_formats=['png', 'svg'])
+    plot_tools.save_fig(path_fn, verbose=True, mkdir_depth=3, image_formats=['png', 'svg'])
     plot_tools.show_if(True, tight_layout=True)
 
 

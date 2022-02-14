@@ -74,7 +74,7 @@ def review_analysed_shot(image_data, path_data, meta, debug=None, output=None):
     base_paths = config_groups['fire_paths']
 
     paths_input = config['paths_input']['input_files']
-    paths_output = {key: Path(path) for key, path in config['paths_output'].items()}
+    paths_output = {key: Path(str(path).format(**base_paths)) for key, path in config['paths_output'].items()}
     paths_figures = utils.make_iterable(config['user']['paths']['figures'])
 
     # Load machine plugins
@@ -158,7 +158,8 @@ def review_analysed_shot(image_data, path_data, meta, debug=None, output=None):
     if (debug.get('movie_temperature_animation', False) or debug.get('movie_temperature_animation_gif', False)):
         overwrite_gif = False
         if debug.get('movie_temperature_animation_gif', False):
-            save_path_fn = paths_output['gifs'] / f'{machine}-{diag_tag_analysed}-{pulse}_temperature_movie.gif'
+            fn = f'{machine}-{diag_tag_raw}-{pulse}_temperature_movie.gif'
+            save_path_fn = paths_output['gifs'] / diag_tag_raw / fn
             if save_path_fn.is_file() and (not overwrite_gif):  # As writing gif is slow don't repeat write
                 save_path_fn = None
         else:
@@ -480,12 +481,12 @@ def review_shot_list(shots=None, camera='rit', recompute=False, copy_recent_shot
 
     debug = {'calcam_calib_image': False, 'debug_detector_window': False,
              'movie_intensity_stats': False,
-         'movie_data_animation': False, 'movie_data_nuc_animation': False,
+             'movie_data_animation': False, 'movie_data_nuc_animation': False,
              'movie_temperature_animation': False,
-             'movie_temperature_animation_gif': False,
-             'spatial_coords': False, 'spatial_res': False,
+             'movie_temperature_animation_gif': True,
+             'spatial_coords': True, 'spatial_res': True,
              'movie_data_nuc': False, 'specific_frames': False, 'camera_shake': False, 'temperature_im': False,
-             'surfaces': False, 'analysis_path': False,
+             'surfaces': False, 'analysis_path': True,
              'temperature_vs_R_t': False,
              'heat_flux_vs_R_t-robust': True,
              'heat_flux_vs_R_t-raw': False,
@@ -614,6 +615,8 @@ if __name__ == '__main__':
     # shots = [45112, 45113, 45480, 45481, 45484]  # Vlad snowflake
     # shots = [45419, 45420]  # EXH=06 power ballance
     # shots = [44697, 44699, 44700, 44702, 44797, 44607]  # EXH-16 X-divertor
-    shots = [45419]  # Strike point sweep for EFIT comparison
-    review_shot_list(camera='rit', recompute=False, shots=shots, show=True, copy_recent_shots=False)
+    # shots = [45419]  # Strike point sweep for EFIT comparison
+    shots = [45470]  # JRH paper
+    # shots = [43795, 43804, 45360]  # calcam calibration shots
+    review_shot_list(camera='rit', recompute=True, shots=shots, show=True, copy_recent_shots=False)
     # review_latest_shots(camera='rit', n_shots=1, n_shots_skip=3, copy_recent_shots=True, recompute=False, show=True)

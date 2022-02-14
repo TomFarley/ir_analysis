@@ -350,7 +350,11 @@ def run_mastu_rit():  # pragma: no cover
     # pulse = 45387  # Some big events
     # pulse = 45388  # Some big events - better
 
-    pulse = 44697  # X-divertor shot
+    # pulse = 44697  # X-divertor shot
+
+    # pulse = 45419  # Strike point sweep for EFIT comparison
+    pulse = 45470  # JRH PRL paper
+
 
     camera = 'rit'
     pass_no = 0
@@ -369,7 +373,7 @@ def run_mastu_rit():  # pragma: no cover
     # TODO: Remove redundant movie_data step
     debug = {'calcam_calib_image': False, 'debug_detector_window': False,
              'movie_intensity_stats-raw': True,
-             'movie_intensity_stats-corrected': True,
+             'movie_intensity_stats-corrected': False,
              'movie_intensity_stats-nuc': False,
              'bad_pixels': False,
              'bad_frames_intensity': False,
@@ -393,9 +397,9 @@ def run_mastu_rit():  # pragma: no cover
     output = {'strike_point_loc': True, 'raw_frame_image': False}
 
     # debug = {k: True for k in debug}
-    debug = {k: False for k in debug}
+    # debug = {k: False for k in debug}
     figures = {'spatial_res': False, 'heat_flux_vs_R_t-robust': True}
-    logger.info(f'Running MAST-U ait scheduler workflow...')
+    logger.debug(f'Running MAST-U ait scheduler workflow...')
     status = scheduler_workflow(pulse=pulse, camera=camera, pass_no=pass_no, machine=machine,
                                 scheduler=scheduler, equilibrium=equilibrium, update_checkpoints=update_checkpoints,
                                 debug=debug, figures=figures, output_files=output,
@@ -405,7 +409,7 @@ def run_mastu_rit():  # pragma: no cover
 
 if __name__ == '__main__':
     # delete_file('~/.fire_config.json', verbose=True, raise_on_fail=True)
-    copy_default_user_settings(replace_existing=True)
+    copy_default_user_settings(replace_existing=False)
 
     # AIR, AIT, AIS, AIU, AIV
     # outputs = run_jet()

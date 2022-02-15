@@ -360,7 +360,7 @@ def run_mastu_rit():  # pragma: no cover
     pass_no = 0
     machine = 'MAST_U'
 
-    scheduler = True
+    scheduler = False
 
     equilibrium = False
     # equilibrium = True
@@ -372,12 +372,12 @@ def run_mastu_rit():  # pragma: no cover
 
     # TODO: Remove redundant movie_data step
     debug = {'calcam_calib_image': False, 'debug_detector_window': False,
-             'movie_intensity_stats-raw': True,
+             'movie_intensity_stats-raw': False,
              'movie_intensity_stats-corrected': False,
              'movie_intensity_stats-nuc': False,
              'bad_pixels': False,
-             'bad_frames_intensity': False,
-             'bad_frames_images': False,
+             'bad_frames_intensity': 2,  # Plot if there are more than n bad frames
+             'bad_frames_images': 2,  # Plot if there are more than n bad frames
              'dark_level': False,
              'movie_data_animation': False, 'movie_data_nuc_animation': False,
              'movie_temperature_animation': False,
@@ -389,6 +389,7 @@ def run_mastu_rit():  # pragma: no cover
              'temperature_vs_R_t': False,
              'heat_flux_vs_R_t-raw': True,
              'heat_flux_vs_R_t-robust': True,
+             'alpha_scan': True,
              'timings': True,
              'strike_point_loc': False,
              # 'heat_flux_path_1d': True,

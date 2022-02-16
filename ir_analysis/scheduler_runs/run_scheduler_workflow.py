@@ -376,8 +376,8 @@ def run_mastu_rit():  # pragma: no cover
              'movie_intensity_stats-corrected': False,
              'movie_intensity_stats-nuc': False,
              'bad_pixels': False,
-             'bad_frames_intensity': 2,  # Plot if there are more than n bad frames
-             'bad_frames_images': 2,  # Plot if there are more than n bad frames
+             'bad_frames_intensity': 15,  # Plot if there are more than n bad frames
+             'bad_frames_images': 20,  # Plot if there are more than n bad frames
              'dark_level': False,
              'movie_data_animation': False, 'movie_data_nuc_animation': False,
              'movie_temperature_animation': False,
@@ -389,7 +389,7 @@ def run_mastu_rit():  # pragma: no cover
              'temperature_vs_R_t': False,
              'heat_flux_vs_R_t-raw': True,
              'heat_flux_vs_R_t-robust': True,
-             'alpha_scan': True,
+             'alpha_scan': 'load',  # Use 'load' to use pickled data if available
              'timings': True,
              'strike_point_loc': False,
              # 'heat_flux_path_1d': True,

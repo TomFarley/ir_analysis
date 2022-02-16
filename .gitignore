@@ -11,3 +11,4 @@ tmp/
 *.out
 *.log
 *.egg-info
+ir_analysis/scheduler_runs/*.p

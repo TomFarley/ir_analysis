@@ -483,8 +483,8 @@ def review_shot_list(shots=None, camera='rit', recompute=False, copy_recent_shot
              'movie_intensity_stats': False,
              'movie_data_animation': False, 'movie_data_nuc_animation': False,
              'movie_temperature_animation': False,
-             'movie_temperature_animation_gif': True,
-             'spatial_coords': False, 'spatial_res': False,
+             'movie_temperature_animation_gif': False,
+             'spatial_coords': True, 'spatial_res': True,
              'movie_data_nuc': False, 'specific_frames': False, 'camera_shake': False, 'temperature_im': False,
              'surfaces': False, 'analysis_path': False,
              'temperature_vs_R_t': False,
@@ -616,7 +616,9 @@ if __name__ == '__main__':
     # shots = [45419, 45420]  # EXH=06 power ballance
     # shots = [44697, 44699, 44700, 44702, 44797, 44607]  # EXH-16 X-divertor
     # shots = [45419]  # Strike point sweep for EFIT comparison
-    shots = [45470]  # JRH paper
+    # shots = [45470]  # JRH paper
     # shots = [43795, 43804, 45360]  # calcam calibration shots
+    # shots = [45360, 45388]  # alpha param tuning shots - CDC H-mode
+    shots = [43615]  #
     review_shot_list(camera='rit', recompute=True, shots=shots, show=True, copy_recent_shots=False)
     # review_latest_shots(camera='rit', n_shots=1, n_shots_skip=3, copy_recent_shots=True, recompute=False, show=True)

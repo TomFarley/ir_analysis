@@ -16,7 +16,7 @@ import xarray as xr
 import matplotlib.pyplot as plt
 
 from fire.interfaces.user_config import copy_default_user_settings
-from fire.scripts.scheduler_workflow import scheduler_workflow, copy_output
+from fire.scripts.scheduler_workflow import scheduler_workflow, copy_uda_netcdf_output
 
 logger = logging.getLogger(__name__)
 
@@ -353,8 +353,12 @@ def run_mastu_rit():  # pragma: no cover
     # pulse = 44697  # X-divertor shot
 
     # pulse = 45419  # Strike point sweep for EFIT comparison
-    pulse = 45470  # JRH PRL paper
+    # pulse = 45470  # JRH PRL paper
 
+    pulse = 45272  # A Kirk test shot
+
+    alpha = None
+    # alpha = 50000
 
     camera = 'rit'
     pass_no = 0
@@ -368,6 +372,7 @@ def run_mastu_rit():  # pragma: no cover
     # update_checkpoints = True
     # movie_plugins_filter = None
     movie_plugins_filter = ['ipx']
+    # movie_plugins_filter = ['uda']
     # movie_plugins_filter = ['raw_movie']
 
     # TODO: Remove redundant movie_data step
@@ -389,7 +394,7 @@ def run_mastu_rit():  # pragma: no cover
              'temperature_vs_R_t': False,
              'heat_flux_vs_R_t-raw': True,
              'heat_flux_vs_R_t-robust': True,
-             'alpha_scan': 'load',  # Use 'load' to use pickled data if available
+             'alpha_scan': False,  # 'load',  # Use 'load' to use pickled data if available
              'timings': True,
              'strike_point_loc': False,
              # 'heat_flux_path_1d': True,
@@ -401,7 +406,7 @@ def run_mastu_rit():  # pragma: no cover
     # debug = {k: False for k in debug}
     figures = {'spatial_res': False, 'heat_flux_vs_R_t-robust': True}
     logger.debug(f'Running MAST-U ait scheduler workflow...')
-    status = scheduler_workflow(pulse=pulse, camera=camera, pass_no=pass_no, machine=machine,
+    status = scheduler_workflow(pulse=pulse, camera=camera, pass_no=pass_no, machine=machine, alpha_user=alpha,
                                 scheduler=scheduler, equilibrium=equilibrium, update_checkpoints=update_checkpoints,
                                 debug=debug, figures=figures, output_files=output,
                                 movie_plugins_filter=movie_plugins_filter)
@@ -422,4 +427,4 @@ if __name__ == '__main__':
     clean_netcdf = True
     copy_to_uda_scrach = True
 
-    copy_output(outputs, copy_to_uda_scrach=copy_to_uda_scrach, clean_netcdf=clean_netcdf)
+    copy_uda_netcdf_output(outputs, copy_to_uda_scrach=copy_to_uda_scrach, clean_netcdf=clean_netcdf)

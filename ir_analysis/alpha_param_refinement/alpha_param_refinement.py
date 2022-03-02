@@ -222,7 +222,7 @@ def plot_heat_flux_map(data, t_profile=None, r_profile=None, r_cutoff=1.06, ax=N
     plot_tools.legend(ax, only_multiple_artists=False)
     plot_tools.show_if(show=show)
 
-def load_and_plot_energy_to_divertor_curve(shots, alphas, recompute, data_shots=None):
+def load_and_plot_energy_to_divertor_curve(shots, alphas, recompute, data_shots=None, r_cutoff=1.06):
 
     fig, axes, ax_passed = plot_tools.get_fig_ax(num='Power to divertor curve', ax_grid_dims=(1, 1),
                                                  figsize=(14, 24), axes_flatten=True)
@@ -241,7 +241,8 @@ def load_and_plot_energy_to_divertor_curve(shots, alphas, recompute, data_shots=
 
         meta_data = dict(diag_tag_raw=diag_tag_raw, shot=shot)
 
-        plot_energy_to_divertor_curve(data, ax=ax0, meta_data=meta_data, show=False, format_axes=(i == 0))
+        plot_energy_to_divertor_curve(data, r_cutoff=r_cutoff, ax=ax0, meta_data=meta_data, show=False,
+                                      format_axes=(i == 0))
 
     plot_tools.show_if(True)
 
@@ -314,8 +315,9 @@ def load_and_plot_heat_flux_temporal_profiles(shots, alphas, recompute, r_profil
     pass
 
 if __name__ == '__main__':
-    shots = [
-        45360, 45388  # Elmy H-mode CDC
+    shots = [# Elmy H-mode CDC
+        45360,  # SW beam, shifted upwards
+        45388   # both beams (extra 1MW from SS beam), Connected double null
     ]
     # alphas = [5e4, 9e4, 12e4, 30e4]
     # alphas = [3e4, 5e4, 7e4, 9e4, 12e4, 30e4]
@@ -326,6 +328,7 @@ if __name__ == '__main__':
 
     r_profile = 0.8
     t_profile = 0.3
+    r_cutoff = 1.06
 
     data_shots = read_fire_nc_output_for_alpha_shot_scan(shots, alphas, diag_tag_raw=diag_tag_raw, recompute=recompute)
 
@@ -334,4 +337,4 @@ if __name__ == '__main__':
     load_and_plot_heat_flux_radial_profiles(shots, alphas, recompute, data_shots=data_shots, t_profile=t_profile)
 
 
-    load_and_plot_energy_to_divertor_curve(shots, alphas, recompute, data_shots=data_shots)
+    load_and_plot_energy_to_divertor_curve(shots, alphas, recompute, data_shots=data_shots, r_cutoff=r_cutoff)

@@ -463,7 +463,7 @@ def review_shot(pulse=None, camera = 'rit', machine='mast_u', recompute=False, s
                                 recompute=recompute)
     pass
 
-def review_shot_list(shots=None, camera='rit', recompute=False, copy_recent_shots=False, show=True):
+def review_shot_list(shots=None, camera='rit', recompute_pickle=False, copy_recent_shots=False, show=True):
     from fire.interfaces.uda_utils import latest_uda_shot_number
     from ir_tools.data_formats.organise_movie_files_from_diag_pc import copy_raw_files_from_staging_area
 
@@ -511,7 +511,7 @@ def review_shot_list(shots=None, camera='rit', recompute=False, copy_recent_shot
 
     for shot in shots:
         try:
-            review_analysed_shot_pickle(pulse=shot, diag_tag_raw=camera, debug_figures=debug, recompute=recompute,
+            review_analysed_shot_pickle(pulse=shot, diag_tag_raw=camera, debug_figures=debug, recompute=recompute_pickle,
                                         show=show)
         except Exception as e:
             logger.exception(f'Failed to reivew shot {shot}')
@@ -620,5 +620,5 @@ if __name__ == '__main__':
     # shots = [43795, 43804, 45360]  # calcam calibration shots
     # shots = [45360, 45388]  # alpha param tuning shots - CDC H-mode
     shots = [43615]  #
-    review_shot_list(camera='rit', recompute=True, shots=shots, show=True, copy_recent_shots=False)
+    review_shot_list(camera='rit', recompute_pickle=False, shots=shots, show=True, copy_recent_shots=False)
     # review_latest_shots(camera='rit', n_shots=1, n_shots_skip=3, copy_recent_shots=True, recompute=False, show=True)

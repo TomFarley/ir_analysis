@@ -65,6 +65,16 @@ def read_fire_nc_output_for_alpha_scan(shot, alphas, diag_tag_raw='rit', update_
 
     return data
 
+
+def read_fire_nc_output_for_alpha_shot_scan(shots, alphas, diag_tag_raw='rit', recompute=False):
+    data_shots = {}
+    for i, shot in enumerate(shots):
+        save_fire_nc_output_for_alpha_scan(shot, alphas=alphas, diag_tag_raw=diag_tag_raw, recompute=recompute)
+        data = read_fire_nc_output_for_alpha_scan(shot, alphas=alphas, diag_tag_raw=diag_tag_raw, update_uda_scratch=recompute)
+        data_shots[shot] = data
+
+    return data_shots
+
 def plot_energy_to_divertor_curve(data, ax=None, r_cutoff = 1.06, meta_data=(), format_axes=True, show=True):
     meta_data = dict(meta_data)
     shot = meta_data.get('shot')
@@ -102,14 +112,17 @@ def plot_energy_to_divertor_curve(data, ax=None, r_cutoff = 1.06, meta_data=(), 
     plot_tools.show_if(show=show)
     pass
 
-def plot_heat_flux_profiles(data, t_profile, r_cutoff = 1.06,  ax=None, meta_data=(), format_axes=True, show=True):
+def plot_heat_flux_radial_profiles(data, t_profile, r_cutoff=1.06, ax=None, meta_data=(), nth_alpha_plot=1, ls='-',
+                                   format_axes=True, show=True):
     meta_data = dict(meta_data)
     shot = meta_data.get('shot')
 
     fig, axes, ax_passed = plot_tools.get_fig_ax(num='power to divertor curve', axes_flatten=True, ax=ax)
     ax = axes[0]
 
-    for alpha, signals in data.items():
+    for i, (alpha, signals) in enumerate(data.items()):
+        if (i % nth_alpha_plot != 0):
+            continue
         R = signals['/ait/path0/R'].data
         t = signals['/ait/path0/t'].data
         heat_flux = signals['/ait/path0/heat_flux']
@@ -125,9 +138,10 @@ def plot_heat_flux_profiles(data, t_profile, r_cutoff = 1.06,  ax=None, meta_dat
         R_clipped = R.where(R < r_cutoff, drop=True)
         heat_flux_profile = heat_flux_profile.where(R_clipped, drop=True)
 
-        heat_flux_profile /= 1e6  # W -> MW
+        # heat_flux_profile /= 1e6  # W -> MW
 
-        ax.plot(R_clipped, heat_flux_profile, ls='-', marker='o', markersize=3, label=f'#{shot}, $t={t_profile:0.2f}$')
+        ax.plot(R_clipped, heat_flux_profile, ls=ls, marker='o', markersize=3, alpha=0.6,
+                label=fr'#{shot}, $\alpha$={alpha:0.2g}')
 
     if format_axes:
         ax.set_xlabel(fr'$R$ [m)] ')
@@ -138,10 +152,171 @@ def plot_heat_flux_profiles(data, t_profile, r_cutoff = 1.06,  ax=None, meta_dat
     plot_tools.legend(ax, only_multiple_artists=False)
     plot_tools.show_if(show=show)
 
+def plot_heat_flux_temporal_profiles(data, r_profile, t_cutoff=None, ax=None, meta_data=(), nth_alpha_plot=1, ls='-',
+                                   format_axes=True, show=True):
+    meta_data = dict(meta_data)
+    shot = meta_data.get('shot')
+
+    fig, axes, ax_passed = plot_tools.get_fig_ax(num='power to divertor curve', axes_flatten=True, ax=ax)
+    ax = axes[0]
+
+    for i, (alpha, signals) in enumerate(data.items()):
+        if (i % nth_alpha_plot != 0):
+            continue
+        R = signals['/ait/path0/R'].data
+        t = signals['/ait/path0/t'].data
+        heat_flux = signals['/ait/path0/heat_flux']
+
+        if isinstance(heat_flux, dict):
+            logger.info(f'Skipping data without signal {signal}')
+            continue
+
+        heat_flux = xr.DataArray(heat_flux.data, dims=('t', 'R'), coords={'R': R, 't': t})
+        heat_flux_temporal_profile = heat_flux.sel(R=r_profile, method='nearest')
+
+        R = heat_flux_temporal_profile['R']
+
+        # heat_flux_profile /= 1e6  # W -> MW
+
+        ax.plot(t, heat_flux_temporal_profile, ls=ls, marker='o', markersize=2, alpha=0.6,
+                label=rf'#{shot}, $\alpha$={alpha:0.2g}')
+
+    if format_axes:
+        ax.set_xlabel(fr'$t$ [s] ')
+        ax.set_ylabel(fr'$q_{{\perp}}$ [MWm$^{{-2}}$]')
+        ax.set_xlim([0, None])
+
+    plot_tools.legend(ax, only_multiple_artists=False)
+    plot_tools.show_if(show=show)
+
+def plot_heat_flux_map(data, t_profile=None, r_profile=None, r_cutoff=1.06, ax=None, meta_data=(), show=True):
+    alpha = list(data.keys())[int(len(data)/2)]
+
+    signals = data[alpha]
+
+    R = signals['/ait/path0/R'].data
+    t = signals['/ait/path0/t'].data
+    heat_flux = signals['/ait/path0/heat_flux']
+
+    heat_flux = xr.DataArray(heat_flux.data, dims=('t', 'R'), coords={'R': R, 't': t})
+
+    R = heat_flux['R']
+    R_clipped = R.where(R < r_cutoff, drop=True)
+    heat_flux = heat_flux.where(R_clipped, drop=True)
+
+    # heat_flux_profile /= 1e6  # W -> MW
+
+    heat_flux.plot(ax=ax, robust=True, cmap='coolwarm')
+
+    if t_profile is not None:
+        ax.axhline(t_profile, ls='--', color='k')
+    if r_profile is not None:
+        ax.axvline(r_profile, ls='--', color='k')
+
+    ax.set_xlabel(fr'$R$ [m] ')
+    ax.set_ylabel(fr'$t$ [s]')
+
+    ax.ticklabel_format(axis='x', style='sci', useMathText=True)
+    # ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
+
+    plot_tools.legend(ax, only_multiple_artists=False)
+    plot_tools.show_if(show=show)
+
+def load_and_plot_energy_to_divertor_curve(shots, alphas, recompute, data_shots=None):
+
+    fig, axes, ax_passed = plot_tools.get_fig_ax(num='Power to divertor curve', ax_grid_dims=(1, 1),
+                                                 figsize=(14, 24), axes_flatten=True)
+    ax0 = axes[0]
+    # ax1 = axes[1]
+
+    lss = ['-', '--', '-.']
+
+    for i, shot in enumerate(shots):
+
+        if data_shots is None:
+            save_fire_nc_output_for_alpha_scan(shot, alphas=alphas, diag_tag_raw=diag_tag_raw, recompute=recompute)
+            data = read_fire_nc_output_for_alpha_scan(shot, alphas=alphas, diag_tag_raw=diag_tag_raw, update_uda_scratch=recompute)
+        else:
+            data = data_shots[shot]
+
+        meta_data = dict(diag_tag_raw=diag_tag_raw, shot=shot)
+
+        plot_energy_to_divertor_curve(data, ax=ax0, meta_data=meta_data, show=False, format_axes=(i == 0))
+
+    plot_tools.show_if(True)
+
+    pass
+
+def load_and_plot_heat_flux_radial_profiles(shots, alphas, recompute, t_profile=0.2, r_cutoff=1.06,
+                                            data_shots=None):
+
+    fig, axes, ax_passed = plot_tools.get_fig_ax(num='Radial profiles', ax_grid_dims=(len(shots), 2),
+                                                 figsize=(14, 24), axes_flatten=False, sharex=True)
+
+    lss = ['-', '--', '-.']
+
+    for i, shot in enumerate(shots):
+        ax = axes[i, 0]
+        ax.axhline(0, ls='--', color='k')
+
+        if data_shots is None:
+            save_fire_nc_output_for_alpha_scan(shot, alphas=alphas, diag_tag_raw=diag_tag_raw, recompute=recompute)
+            data = read_fire_nc_output_for_alpha_scan(shot, alphas=alphas, diag_tag_raw=diag_tag_raw, update_uda_scratch=recompute)
+        else:
+            data = data_shots[shot]
+
+
+        meta_data = dict(diag_tag_raw=diag_tag_raw, shot=shot)
+
+        plot_heat_flux_radial_profiles(data, t_profile=t_profile, r_cutoff=r_cutoff,
+                                       ax=ax, meta_data=meta_data, nth_alpha_plot=4, ls=lss[i],
+                                       show=False, format_axes=True)
+
+        ax = axes[i, 1]
+        plot_heat_flux_map(data, t_profile=t_profile, r_cutoff=r_cutoff, ax=ax, show=False)
+
+
+    plot_tools.show_if(True)
+
+    pass
+
+def load_and_plot_heat_flux_temporal_profiles(shots, alphas, recompute, r_profile=0.2, r_cutoff=1.06,
+                                            data_shots=None):
+
+    fig, axes, ax_passed = plot_tools.get_fig_ax(num='Temporal profiles', ax_grid_dims=(len(shots), 2),
+                                                 figsize=(14, 24), axes_flatten=False, sharex=False)
+
+    lss = ['-', '--', '-.']
+
+    for i, shot in enumerate(shots):
+        ax = axes[i, 0]
+        ax.axhline(0, ls='--', color='k')
+
+        if data_shots is None:
+            save_fire_nc_output_for_alpha_scan(shot, alphas=alphas, diag_tag_raw=diag_tag_raw, recompute=recompute)
+            data = read_fire_nc_output_for_alpha_scan(shot, alphas=alphas, diag_tag_raw=diag_tag_raw, update_uda_scratch=recompute)
+        else:
+            data = data_shots[shot]
+
+
+        meta_data = dict(diag_tag_raw=diag_tag_raw, shot=shot)
+
+        plot_heat_flux_temporal_profiles(data, r_profile=r_profile,
+                                       ax=ax, meta_data=meta_data, nth_alpha_plot=4, ls=lss[i],
+                                       show=False, format_axes=True)
+
+        ax = axes[i, 1]
+        plot_heat_flux_map(data, r_profile=r_profile, r_cutoff=r_cutoff, ax=ax, show=False)
+
+
+    plot_tools.show_if(True)  # , tight_layout=False)
+
+    pass
+
 if __name__ == '__main__':
     shots = [
         45360, 45388  # Elmy H-mode CDC
-             ]
+    ]
     # alphas = [5e4, 9e4, 12e4, 30e4]
     # alphas = [3e4, 5e4, 7e4, 9e4, 12e4, 30e4]
     alphas = [1e4, 2e4, 3e4, 4e4, 5e4, 6e4, 7e4, 8e4, 9e4, 10.5e4, 12e4, 17e4, 24e4, 30e4, 40e4, 50e4]
@@ -149,20 +324,14 @@ if __name__ == '__main__':
 
     recompute = False  # Re-write uda nc files
 
-    fig, axes, ax_passed = plot_tools.get_fig_ax(num='Power to divertor curve', ax_grid_dims=(2, 1),
-                                                 figsize=(8, 16), axes_flatten=True)
-    ax0 = axes[0]
-    ax1 = axes[1]
+    r_profile = 0.8
+    t_profile = 0.3
 
-    for i, shot in enumerate(shots):
-        save_fire_nc_output_for_alpha_scan(shot, alphas=alphas, diag_tag_raw=diag_tag_raw, recompute=recompute)
-        data = read_fire_nc_output_for_alpha_scan(shot, alphas=alphas, diag_tag_raw=diag_tag_raw, update_uda_scratch=recompute)
+    data_shots = read_fire_nc_output_for_alpha_shot_scan(shots, alphas, diag_tag_raw=diag_tag_raw, recompute=recompute)
 
-        meta_data = dict(diag_tag_raw=diag_tag_raw, shot=shot)
+    load_and_plot_heat_flux_temporal_profiles(shots, alphas, recompute, data_shots=data_shots, r_profile=r_profile)
 
-        plot_energy_to_divertor_curve(data, ax=ax0, meta_data=meta_data, show=False, format_axes=(i == 0))
-        plot_heat_flux_profiles(data, t_profile=0.2, ax=ax1, meta_data=meta_data, show=False, format_axes=(i == 0))
+    load_and_plot_heat_flux_radial_profiles(shots, alphas, recompute, data_shots=data_shots, t_profile=t_profile)
 
-    plot_tools.show_if(True)
 
-    pass
+    load_and_plot_energy_to_divertor_curve(shots, alphas, recompute, data_shots=data_shots)

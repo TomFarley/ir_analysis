@@ -112,7 +112,7 @@ def plot_energy_to_divertor_curve(data, ax=None, r_cutoff = 1.06, meta_data=(), 
     plot_tools.legend(ax, only_multiple_artists=False)
 
     path_fn = (f'./alpha_scan_figures/energy_to_divertor_curves/'
-               f'energy_to_divertor_curves-{"_".join([str(shot for shot in shots)])}.png')
+               f'energy_to_divertor_curves-{"_".join([str(shot) for shot in shots])}.png')
     plot_tools.save_fig(path_fn=path_fn, mkdir_depth=2)
 
     plot_tools.show_if(show=show)
@@ -158,7 +158,7 @@ def plot_heat_flux_radial_profiles(data, t_profile, r_cutoff=1.06, ax=None, meta
     plot_tools.legend(ax, only_multiple_artists=False)
 
     path_fn = (f'./alpha_scan_figures/radial_profiles/'
-               f'radial_profiles-{"_".join([str(shot for shot in shots)])}-t_{t_profile:0.3f}.png')
+               f'radial_profiles-{"_".join([str(shot) for shot in shots])}-t_{t_profile:0.3f}.png')
     plot_tools.save_fig(path_fn=path_fn, mkdir_depth=2)
 
     plot_tools.show_if(show=show)
@@ -200,7 +200,7 @@ def plot_heat_flux_temporal_profiles(data, r_profile, t_cutoff=None, ax=None, me
     plot_tools.legend(ax, only_multiple_artists=False)
 
     path_fn = (f'./alpha_scan_figures/temporal_profiles/' 
-              f'temporal_profiles-{"_".join([str(shot for shot in shots)])}-r_{r_profile:0.3f}.png')
+              f'temporal_profiles-{"_".join([str(shot) for shot in shots])}-r_{r_profile:0.3f}.png')
     plot_tools.save_fig(path_fn=path_fn, mkdir_depth=2)
 
     plot_tools.show_if(show=show)

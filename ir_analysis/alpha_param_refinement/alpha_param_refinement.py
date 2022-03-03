@@ -16,6 +16,7 @@ import xarray as xr
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 
+from fire.misc import utils
 from fire.scripts.scheduler_workflow import scheduler_workflow, copy_uda_netcdf_output
 from fire.interfaces import uda_utils, io_basic
 from fire.plotting import plot_tools
@@ -109,6 +110,11 @@ def plot_energy_to_divertor_curve(data, ax=None, r_cutoff = 1.06, meta_data=(), 
         # ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
 
     plot_tools.legend(ax, only_multiple_artists=False)
+
+    path_fn = (f'./alpha_scan_figures/energy_to_divertor_curves/'
+               f'energy_to_divertor_curves-{"_".join([str(shot for shot in shots)])}.png')
+    plot_tools.save_fig(path_fn=path_fn, mkdir_depth=2)
+
     plot_tools.show_if(show=show)
     pass
 
@@ -150,6 +156,11 @@ def plot_heat_flux_radial_profiles(data, t_profile, r_cutoff=1.06, ax=None, meta
         # ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
 
     plot_tools.legend(ax, only_multiple_artists=False)
+
+    path_fn = (f'./alpha_scan_figures/radial_profiles/'
+               f'radial_profiles-{"_".join([str(shot for shot in shots)])}-t_{t_profile:0.3f}.png')
+    plot_tools.save_fig(path_fn=path_fn, mkdir_depth=2)
+
     plot_tools.show_if(show=show)
 
 def plot_heat_flux_temporal_profiles(data, r_profile, t_cutoff=None, ax=None, meta_data=(), nth_alpha_plot=1, ls='-',
@@ -187,10 +198,15 @@ def plot_heat_flux_temporal_profiles(data, r_profile, t_cutoff=None, ax=None, me
         ax.set_xlim([0, None])
 
     plot_tools.legend(ax, only_multiple_artists=False)
+
+    path_fn = (f'./alpha_scan_figures/temporal_profiles/' 
+              f'temporal_profiles-{"_".join([str(shot for shot in shots)])}-r_{r_profile:0.3f}.png')
+    plot_tools.save_fig(path_fn=path_fn, mkdir_depth=2)
+
     plot_tools.show_if(show=show)
 
 def plot_heat_flux_map(data, t_profile=None, r_profile=None, r_cutoff=1.06, ax=None, meta_data=(), show=True):
-    alpha = list(data.keys())[int(len(data)/2)]
+    alpha = list(data.keys())[int(len(data)/2)] if 70000 not in data.keys() else 70000
 
     signals = data[alpha]
 
@@ -219,13 +235,15 @@ def plot_heat_flux_map(data, t_profile=None, r_profile=None, r_cutoff=1.06, ax=N
     ax.ticklabel_format(axis='x', style='sci', useMathText=True)
     # ax.xaxis.set_major_formatter(mtick.FormatStrFormatter('%.1e'))
 
+    plot_tools.annotate_axis(ax, fr"$\alpha$={alpha:0.2g}")
+
     plot_tools.legend(ax, only_multiple_artists=False)
     plot_tools.show_if(show=show)
 
 def load_and_plot_energy_to_divertor_curve(shots, alphas, recompute, data_shots=None, r_cutoff=1.06):
 
     fig, axes, ax_passed = plot_tools.get_fig_ax(num='Power to divertor curve', ax_grid_dims=(1, 1),
-                                                 figsize=(14, 24), axes_flatten=True)
+                                                 figsize=(8, 6), axes_flatten=True)
     ax0 = axes[0]
     # ax1 = axes[1]
 
@@ -248,11 +266,11 @@ def load_and_plot_energy_to_divertor_curve(shots, alphas, recompute, data_shots=
 
     pass
 
-def load_and_plot_heat_flux_radial_profiles(shots, alphas, recompute, t_profile=0.2, r_cutoff=1.06,
+def load_and_plot_heat_flux_radial_profiles(shots, alphas, recompute, t_profile=0.2, r_cutoff=1.06, nth_alpha_plot=4,
                                             data_shots=None):
 
     fig, axes, ax_passed = plot_tools.get_fig_ax(num='Radial profiles', ax_grid_dims=(len(shots), 2),
-                                                 figsize=(14, 24), axes_flatten=False, sharex=True)
+                                                 figsize=(14, 10), axes_flatten=False, sharex=True)
 
     lss = ['-', '--', '-.']
 
@@ -270,7 +288,7 @@ def load_and_plot_heat_flux_radial_profiles(shots, alphas, recompute, t_profile=
         meta_data = dict(diag_tag_raw=diag_tag_raw, shot=shot)
 
         plot_heat_flux_radial_profiles(data, t_profile=t_profile, r_cutoff=r_cutoff,
-                                       ax=ax, meta_data=meta_data, nth_alpha_plot=4, ls=lss[i],
+                                       ax=ax, meta_data=meta_data, nth_alpha_plot=nth_alpha_plot, ls=lss[i],
                                        show=False, format_axes=True)
 
         ax = axes[i, 1]
@@ -281,16 +299,17 @@ def load_and_plot_heat_flux_radial_profiles(shots, alphas, recompute, t_profile=
 
     pass
 
-def load_and_plot_heat_flux_temporal_profiles(shots, alphas, recompute, r_profile=0.2, r_cutoff=1.06,
+def load_and_plot_heat_flux_temporal_profiles(shots, alphas, recompute, r_profile=0.2, r_cutoff=1.06, nth_alpha_plot=4,
                                             data_shots=None):
 
     fig, axes, ax_passed = plot_tools.get_fig_ax(num='Temporal profiles', ax_grid_dims=(len(shots), 2),
-                                                 figsize=(14, 24), axes_flatten=False, sharex=False)
+                                                 figsize=(14, 10), axes_flatten=False, sharex=False)
+    axes = utils.make_iterable(axes, ndarray=True)
 
     lss = ['-', '--', '-.']
 
     for i, shot in enumerate(shots):
-        ax = axes[i, 0]
+        ax = axes[i, 0] if axes.ndim > 1 else axes[0]
         ax.axhline(0, ls='--', color='k')
 
         if data_shots is None:
@@ -303,10 +322,10 @@ def load_and_plot_heat_flux_temporal_profiles(shots, alphas, recompute, r_profil
         meta_data = dict(diag_tag_raw=diag_tag_raw, shot=shot)
 
         plot_heat_flux_temporal_profiles(data, r_profile=r_profile,
-                                       ax=ax, meta_data=meta_data, nth_alpha_plot=4, ls=lss[i],
+                                       ax=ax, meta_data=meta_data, nth_alpha_plot=nth_alpha_plot, ls=lss[i],
                                        show=False, format_axes=True)
 
-        ax = axes[i, 1]
+        ax = axes[i, 1] if axes.ndim > 1 else axes[1]
         plot_heat_flux_map(data, r_profile=r_profile, r_cutoff=r_cutoff, ax=ax, show=False)
 
 
@@ -316,7 +335,7 @@ def load_and_plot_heat_flux_temporal_profiles(shots, alphas, recompute, r_profil
 
 if __name__ == '__main__':
     shots = [# Elmy H-mode CDC
-        45360,  # SW beam, shifted upwards
+        # 45360,  # SW beam, shifted upwards
         45388   # both beams (extra 1MW from SS beam), Connected double null
     ]
     # alphas = [5e4, 9e4, 12e4, 30e4]
@@ -326,16 +345,27 @@ if __name__ == '__main__':
 
     recompute = False  # Re-write uda nc files
 
-    r_profile = 0.8
+    # Radius at which to plot temporal profiles
+    # r_profile = 0.8  #
+    r_profile = 1.222  # High negative heatflux after transient on T4 in 45388
+
+    # Time at which to plot radial profiles
     t_profile = 0.3
-    r_cutoff = 1.06
+
+    # Radial cutoff to eg exclude artifacts on T4
+    # r_cutoff = 1.06  # Avoid T4
+    r_cutoff = 1.5  # Include T4
+
+    # Only plot nth alpha parameter on profile plots so there arn't too many lines
+    # nth_alpha_plot = 4
+    nth_alpha_plot = 1
 
     data_shots = read_fire_nc_output_for_alpha_shot_scan(shots, alphas, diag_tag_raw=diag_tag_raw, recompute=recompute)
 
     load_and_plot_heat_flux_temporal_profiles(shots, alphas, recompute, data_shots=data_shots, r_profile=r_profile,
-                                              r_cutoff=r_cutoff)
+                                              r_cutoff=r_cutoff, nth_alpha_plot=nth_alpha_plot)
 
     load_and_plot_heat_flux_radial_profiles(shots, alphas, recompute, data_shots=data_shots, t_profile=t_profile,
-                                            r_cutoff=r_cutoff)
+                                            r_cutoff=r_cutoff, nth_alpha_plot=nth_alpha_plot)
 
     load_and_plot_energy_to_divertor_curve(shots, alphas, recompute, data_shots=data_shots, r_cutoff=r_cutoff)

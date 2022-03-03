@@ -332,9 +332,10 @@ if __name__ == '__main__':
 
     data_shots = read_fire_nc_output_for_alpha_shot_scan(shots, alphas, diag_tag_raw=diag_tag_raw, recompute=recompute)
 
-    load_and_plot_heat_flux_temporal_profiles(shots, alphas, recompute, data_shots=data_shots, r_profile=r_profile)
+    load_and_plot_heat_flux_temporal_profiles(shots, alphas, recompute, data_shots=data_shots, r_profile=r_profile,
+                                              r_cutoff=r_cutoff)
 
-    load_and_plot_heat_flux_radial_profiles(shots, alphas, recompute, data_shots=data_shots, t_profile=t_profile)
-
+    load_and_plot_heat_flux_radial_profiles(shots, alphas, recompute, data_shots=data_shots, t_profile=t_profile,
+                                            r_cutoff=r_cutoff)
 
     load_and_plot_energy_to_divertor_curve(shots, alphas, recompute, data_shots=data_shots, r_cutoff=r_cutoff)

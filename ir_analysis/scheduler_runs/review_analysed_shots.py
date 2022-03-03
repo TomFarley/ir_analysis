@@ -130,6 +130,11 @@ def review_analysed_shot(image_data, path_data, meta, debug=None, output=None):
         # Force plot if there are any saturated frames
         temporal_figures.plot_movie_intensity_stats(frame_data, meta_data=meta_data)
 
+    if (debug.get('movie_temperature_stats', False)):
+        # Force plot if there are any saturated frames
+        temporal_figures.plot_movie_intensity_stats(image_data.get('temperature_im'), meta_data=meta_data,
+                                                    bit_depth=None)
+
     if debug.get('spatial_res', False):
         debug_plots.debug_spatial_res(image_data)
 
@@ -480,13 +485,13 @@ def review_shot_list(shots=None, camera='rit', recompute_pickle=False, copy_rece
     n_shots = len(shots)
 
     debug = {'calcam_calib_image': False, 'debug_detector_window': False,
-             'movie_intensity_stats': False,
+             'movie_intensity_stats': True, 'movie_temperature_stats': True,
              'movie_data_animation': False, 'movie_data_nuc_animation': False,
-             'movie_temperature_animation': False,
+             'movie_temperature_animation': True,
              'movie_temperature_animation_gif': False,
              'spatial_coords': True, 'spatial_res': True,
              'movie_data_nuc': False, 'specific_frames': False, 'camera_shake': False, 'temperature_im': False,
-             'surfaces': False, 'analysis_path': False,
+             'surfaces': False, 'analysis_path': True,
              'temperature_vs_R_t': False,
              'heat_flux_vs_R_t-robust': True,
              'heat_flux_vs_R_t-raw': False,
@@ -619,6 +624,7 @@ if __name__ == '__main__':
     # shots = [45470]  # JRH paper
     # shots = [43795, 43804, 45360]  # calcam calibration shots
     # shots = [45360, 45388]  # alpha param tuning shots - CDC H-mode
-    shots = [43615]  #
+    shots = [45388]  #
+    # shots = [45448]  #
     review_shot_list(camera='rit', recompute_pickle=False, shots=shots, show=True, copy_recent_shots=False)
     # review_latest_shots(camera='rit', n_shots=1, n_shots_skip=3, copy_recent_shots=True, recompute=False, show=True)

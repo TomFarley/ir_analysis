@@ -537,8 +537,8 @@ def review_latest_shots(n_shots=1, camera='rit', copy_recent_shots=True, n_shots
     shots = np.arange(shot_start, shot_start-n_shots, -1) - n_shots_skip  # [::-1]
 
     debug = {'calcam_calib_image': False, 'debug_detector_window': False,
-             'movie_intensity_stats': True,
-         'movie_data_animation': False, 'movie_data_nuc_animation': False,
+             'movie_intensity_stats': True, 'movie_temperature_stats': True,
+             'movie_data_animation': False, 'movie_data_nuc_animation': False,
              'movie_temperature_animation': False,
              'movie_temperature_animation_gif': True,
              'spatial_coords': True, 'spatial_res': True,
